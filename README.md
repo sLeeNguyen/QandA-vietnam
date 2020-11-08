@@ -10,7 +10,7 @@ Question and Answer - discuss for vietnamese people
 **Clone repository**
 
         https://github.com/sLeeNguyen/QandA-vietnam.git
-        cd QandA-vietnam
+        cd QandA-vietnam/backend
         
 **Create virtualenv environment**
 
