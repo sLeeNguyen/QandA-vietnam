@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
-from .models import User
+from .models import User, Profile
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -76,3 +76,21 @@ class LogoutSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         pass
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = '__all__'
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer()
+
+    class Meta:
+        model = User
+        exclude = ['password', 'groups', 'user_permissions', 'last_login']
+
+
+
