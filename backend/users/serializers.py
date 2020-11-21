@@ -24,7 +24,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.ModelSerializer):
-    token = serializers.CharField(read_only=True)
+    token = serializers.DictField(read_only=True)
 
     class Meta:
         model = User
