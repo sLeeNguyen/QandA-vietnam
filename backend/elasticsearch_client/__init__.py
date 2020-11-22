@@ -1,1 +1,1 @@
-# elasticsearch server (v7.5.2)
+# elasticsearch_client server (v7.5.2)
