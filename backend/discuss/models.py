@@ -30,6 +30,9 @@ class Question(Post):
                     content_type=ContentType.objects.get_for_model(Question)
                 ).count()
 
+    def get_list_tag_names(self):
+        return [tag.tag_name for tag in self.tags.all()]
+
 
 class Answer(Post):
     in_question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')

@@ -34,7 +34,7 @@ class AnswerCreationSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return {
             'question_id': instance.in_question.id,
-            'answer': AnswerDetailSerializer(instance).data
+            'answer': AnswerDetailSerializer(instance, context=self.context).data
         }
 
 
@@ -54,9 +54,11 @@ class QuestionCreationSerializer(serializers.ModelSerializer):
         model = Question
         fields = ['title', 'content']
 
+    def to_representation(self, instance):
+        return QuestionDetailSerializer(instance, context=self.context).data
+
 
 class QuestionDetailSerializer(serializers.ModelSerializer):
-    answers = AnswerDetailSerializer(many=True, read_only=True)
     owner = UserBasicInfoSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
 
