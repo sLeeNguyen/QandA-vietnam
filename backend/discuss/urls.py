@@ -2,6 +2,13 @@ from django.urls import path
 from discuss import views
 
 
+app_name = "discuss"
 urlpatterns = [
-    # path('questions', views.RegisterView.as_view(), name='register'),
+    path('questions/', views.QuestionListView.as_view(), name='list_questions'),
+    path('questions/create/', views.QuestionCreationView.as_view(), name='create'),
+    path('questions/<int:id>/', views.QuestionDetailView.as_view(), name='detail'),
+    path('questions/<int:id>/update-delete/', views.QuestionUpdateDestroyView.as_view(), name='update'),
+    path('questions/<int:id>/answers/', views.AnswerListView.as_view(), name='answers-belong-to-question'),
+    path('answers/create/', views.AnswerCreationView.as_view(), name='answer-creation'),
+    path('answers/<int:id>/update-delete/', views.AnswerUpdateDestroyView.as_view(), name='answer-update'),
 ]
