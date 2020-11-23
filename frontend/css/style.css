@@ -2354,6 +2354,11 @@ a.comment-reply:hover {
 .themeix-blog-h {
     padding-top: 0;
 }
+
+#comment-btn{
+    margin-top: 10px;
+    float: right;
+}
 /***************************************************
 
 23. Right Sidebar Page

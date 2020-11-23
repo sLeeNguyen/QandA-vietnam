@@ -54,9 +54,16 @@ $(function () {
         }
     });
 
+    /*=============================================
+        	3. Rich Text-Editor
+    ===============================================*/
 
     RTE_DefaultConfig.url_base = 'richtexteditor'
     var editor1cfg = {}
     editor1cfg.toolbar = "basic";
     var editor1 = new RichTextEditor("#div_editor1", editor1cfg);
+    
+    // console.log(editor1);
+    // var image=$('#div_editor1').children('img');
+    // console.log(image.innerHTML);
 });

@@ -39,10 +39,6 @@
     <!-- Main Stylesheet -->
     <link href="./css/style.css" rel="stylesheet">
 
-    <!-- Richtext Editor -->
-    <link rel="stylesheet" href="./css/style-richtext-editor.css" />
-    <link rel="stylesheet" href="./css/rte_theme_default.css" />
-
     <!-- Responsive CSS -->
     <link href="css/responsive.css" rel="stylesheet">
 
@@ -50,6 +46,7 @@
 
     <script src="js/load-heder-footer-sidebar.js"></script>
 
+    <script src="//cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>
 
 </head>
 
@@ -86,12 +83,11 @@
                                 <input id="question-title" type="text" name="question-title" />
 
                                 <label for="question-content">Chi tiết câu hỏi</label>
-                                <div id="question-content">
-                                    <div class="hs-docs-content-divider">
-                                        <div id="div_editor1">
-                                            <p>Hello world!</p>
-                                        </div>
-                                    </div>
+                                <div>
+                                    <textarea name="cauhoi" id="cauhoi"></textarea>
+                                    <script>
+                                        CKEDITOR.replace('cauhoi');
+                                    </script>
                                 </div>
                                 <label for="question-category">Thể loại</label>
                                 <select name="question-category" id="question-category" class="postform">
@@ -140,9 +136,6 @@
 
     <!-- Google Map -->
     <script src="https://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
-
-    <script type="text/javascript" src="./js/rte.js"></script>
-    <script type="text/javascript" src='./js/all_plugins.js'></script>
 
     <!-- Main Js -->
     <script src="js/main.js"></script>
