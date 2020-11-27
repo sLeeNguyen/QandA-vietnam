@@ -7,8 +7,63 @@
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/user-profile.css">
+
+    <!-- favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="images/icon logo3.png">
+
+
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font-Awesome CSS -->
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+
+    <!--Animate CSS -->
+    <link rel="stylesheet" href="css/animate.min.css">
+
+    <!-- Owl Carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+
+    <!-- Mean Menu CSS -->
+    <link rel="stylesheet" href="css/meanmenu.min.css">
+
+    <!-- Main Stylesheet -->
+    <link href="./css/style.css" rel="stylesheet">
+
+    <!-- Responsive CSS -->
+    <link href="css/responsive.css" rel="stylesheet">
+
+    <script src="./js/jquery-3.4.1.min.js"></script>
+
+    <script src="js/load-heder-footer-sidebar.js"></script>
+
+    <script src="//cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>
 </head>
 <body>
+
+<!-- Start Header -->
+<header id="header"></header>
+    <!-- End Header -->
+
+    <!-- Start Page Banner Area -->
+    <div class="page-banner-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-title">
+                        <h2>Đặt câu hỏi</h2>
+                        <span class="sub-title"><a href="#">Trang chủ </a> / Trang cá nhân</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Pages Banner Area -->
+
+
     <div class="container bootstrap snippets bootdey">
         <div class="row">
             <div class="profile-nav col-md-3">
@@ -147,7 +202,31 @@
             </div>
         </div>
     </div>
+
+    
+    <!-- Start Footer Area -->
+    <footer id="footer"></footer>
+    <!-- End Footer Area -->
+
     <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <!-- jquery min -->
+    <!-- <script src="js/jquery.min.js"></script> -->
+
+    <!-- Bootstrap Js -->
+    <!-- <script src="js/bootstrap.min.js"></script> -->
+
+    <!-- jQuery Easing -->
+    <script src="js/jquery.easing.js"></script>
+
+    <!-- Owl Carousel Js -->
+    <script src="js/owl.carousel.min.js"></script>
+
+    <!-- Google Map -->
+    <script src="https://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+
+    <!-- Main Js -->
+    <script src="js/main.js"></script>
 </body>
 </html>
