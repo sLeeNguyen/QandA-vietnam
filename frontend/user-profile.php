@@ -54,7 +54,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-title">
-                        <h2>Đặt câu hỏi</h2>
+                        <h2>Trang cá nhân</h2>
                         <span class="sub-title"><a href="#">Trang chủ </a> / Trang cá nhân</span>
                     </div>
                 </div>
