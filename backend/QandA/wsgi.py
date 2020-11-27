@@ -10,7 +10,11 @@ https://docs.djangoproject.com/en/3.1/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
+from elasticsearch_client import elasticsearch
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'QandA.settings')
+
+# Run elasticsearch index settings
+elasticsearch.init()
 
 application = get_wsgi_application()

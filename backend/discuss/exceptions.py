@@ -14,8 +14,9 @@
 #     limitations under the License.
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-from django.apps import AppConfig
+class FieldErrorException(Exception):
+    pass
 
 
-class DiscussConfig(AppConfig):
-    name = 'discuss'
+class HTMLStripErrorException(Exception):
+    pass

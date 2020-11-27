@@ -1,7 +1,26 @@
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#     Copyright 2020 QandA-vietnam.
+#
+#     Licensed under the Apache License, Version 2.0 (the "License");
+#     you may not use this file except in compliance with the License.
+#     You may obtain a copy of the License at
+#
+#         http://www.apache.org/licenses/LICENSE-2.0
+#
+#     Unless required by applicable law or agreed to in writing, software
+#     distributed under the License is distributed on an "AS IS" BASIS,
+#     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#     See the License for the specific language governing permissions and
+#     limitations under the License.
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 from django.db import models
 from django.contrib.auth.models import UserManager, AbstractBaseUser, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -37,14 +56,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    def __str__(self):
-        return self.username
-
-    def get_display_name(self):
-        if self.profile.display_name:
-            return self.profile.display_name
-        return self.username
-
     @property
     def tokens(self):
         refresh = RefreshToken.for_user(self)
@@ -54,9 +65,22 @@ class User(AbstractBaseUser, PermissionsMixin):
             'access': str(refresh.access_token),
         }
 
+    def __str__(self):
+        return self.username
+
+    def vote(self, post, vote_type):
+        content_type = ContentType.objects.get_for_model(post)
+
+        return Vote.objects.create(
+            user=self,
+            content_type=content_type,
+            object_id=post.id,
+            type=vote_type
+        )
+
 
 class Profile(models.Model):
-    owner = models.OneToOneField(User, on_delete=models.CASCADE)
+    owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     display_name = models.CharField(max_length=150, blank=True, null=True)
     title = models.CharField(max_length=255, blank=True, null=True)
     location = models.CharField(max_length=255, blank=True, null=True)
@@ -70,6 +94,9 @@ class Vote(models.Model):
         ('up', _('up vote')),
         ('down', _('down vote')),
     ]
-    date_vote = models.DateTimeField(timezone.now)
+    date_vote = models.DateTimeField(default=timezone.now)
     type = models.CharField(max_length=4, blank=False, null=False, choices=VOTE_CHOICES)
     user = models.ForeignKey(User, related_name='votes', on_delete=models.CASCADE)
+    object_id = models.IntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_object = GenericForeignKey('content_type', 'object_id')

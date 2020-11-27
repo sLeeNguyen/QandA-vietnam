@@ -14,8 +14,13 @@
 #     limitations under the License.
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-from django.apps import AppConfig
+from rest_framework import serializers
+from .models import Tag
 
 
-class DiscussConfig(AppConfig):
-    name = 'discuss'
+class TagSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tag
+        fields = '__all__'
+

@@ -14,8 +14,12 @@
 #     limitations under the License.
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-from django.apps import AppConfig
+from rest_framework.permissions import BasePermission
 
 
-class DiscussConfig(AppConfig):
-    name = 'discuss'
+class IsOwner(BasePermission):
+    """
+    Allow access if user is an owner of object
+    """
+    def has_object_permission(self, request, view, obj):
+        return bool(request.user == obj.owner)

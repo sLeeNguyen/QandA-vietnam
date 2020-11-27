@@ -1,4 +1,4 @@
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #     Copyright 2020 QandA-vietnam.
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +12,12 @@
 #     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #     See the License for the specific language governing permissions and
 #     limitations under the License.
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-from django.apps import AppConfig
+from rest_framework.pagination import PageNumberPagination
 
 
-class DiscussConfig(AppConfig):
-    name = 'discuss'
+class AnswerResultSetPagination(PageNumberPagination):
+    page_size = 30
+    page_size_query_param = 'page_size'
+    max_page_size = 100
