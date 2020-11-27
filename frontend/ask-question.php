@@ -46,7 +46,8 @@
 
     <script src="js/load-heder-footer-sidebar.js"></script>
 
-    <script src="//cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>
+    <script src="./ckeditor/ckeditor.js"></script>
+
 
 </head>
 
