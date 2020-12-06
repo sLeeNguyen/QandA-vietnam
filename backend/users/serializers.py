@@ -41,10 +41,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class LoginSerializer(serializers.ModelSerializer):
     token = serializers.DictField(read_only=True)
+    display_name = serializers.CharField(max_length=150, read_only=True)
+    avatar = serializers.ImageField(read_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'token']
+        fields = ['email', 'username', 'password', 'token', 'display_name', 'avatar']
         extra_kwargs = {
             'email': {'validators': []},
             'username': {'read_only': True},
@@ -67,7 +69,20 @@ class LoginSerializer(serializers.ModelSerializer):
         return {
             'username': user.username,
             'email': user.email,
+            'display_name': user.profile.display_name,
+            'avatar': user.profile.avatar,
             'token': user.tokens,
+        }
+
+    def to_representation(self, instance):
+        return {
+            'user': {
+                'username': instance['username'],
+                'display_name': instance['display_name'],
+                'email': instance['email'],
+                'avatar_url': self.context['request'].build_absolute_uri(instance['avatar'].url)
+            },
+            'token': instance['token']
         }
 
 
@@ -108,5 +123,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
         model = User
         exclude = ['password', 'groups', 'user_permissions', 'last_login']
 
+    def to_representation(self, instance):
+        pass
 
 
