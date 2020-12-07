@@ -60,11 +60,11 @@ class LoginSerializer(serializers.ModelSerializer):
         user = authenticate(email=email, password=password)
 
         if not user:
-            raise AuthenticationFailed('Invalid credentials. Please try again')
+            raise AuthenticationFailed('Tài khoản hoặc mật khẩu không chính xác')
         if not user.is_active:
-            raise AuthenticationFailed('Account is blocked')
+            raise AuthenticationFailed('Tài khoản bị khoá')
         if not user.is_verified:
-            raise AuthenticationFailed('Email is not verified')
+            raise AuthenticationFailed('Tài khoản chưa được kích hoạt')
 
         return {
             'username': user.username,
