@@ -182,4 +182,4 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 # Frontend
-FRONTEND_URL = 'http://localhost'
+EMAIL_VERIFY_URL = 'http://localhost/qanda/users/verify'
