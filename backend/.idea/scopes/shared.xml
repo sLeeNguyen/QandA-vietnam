@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="shared" pattern="" />
+  <scope name="shared" pattern="file:discuss/admin.py||file:discuss/apps.py||file:discuss/exceptions.py||file:discuss/models.py||file:discuss/pagination.py||file:discuss/permissions.py||file:discuss/serializers.py||file:discuss/tests.py||file:discuss/urls.py||file:discuss/utils.py||file:discuss/views.py||file:elasticsearch_client/__init__.py||file:elasticsearch_client/elasticsearch.py||file:elasticsearch_client/esconfig.py||file:tags/__init__.py||file:tags/admin.py||file:tags/apps.py||file:tags/models.py||file:tags/serializers.py||file:tags/tests.py||file:tags/views.py||file:users/__init__.py||file:users/admin.py||file:users/apps.py||file:users/models.py||file:users/serializers.py||file:users/signals.py||file:users/tests.py||file:users/urls.py||file:users/utils.py||file:users/views.py||file:discuss/__init__.py" />
 </component>
