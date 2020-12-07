@@ -61,8 +61,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=365),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=365),
     'SIGNING_KEY': env("JWT_SECRET_KEY"),
 }
 
@@ -85,6 +85,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost',
 ]
 
 ROOT_URLCONF = 'QandA.urls'
@@ -175,3 +180,6 @@ EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = env('EMAIL_HOST_USER')
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+
+# Frontend
+FRONTEND_URL = 'http://localhost'
