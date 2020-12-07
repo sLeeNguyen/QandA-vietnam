@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Site Title -->
     <title>Answers</title>
 
@@ -38,6 +38,10 @@
     <!-- Main Stylesheet -->
     <link href="./css/style.css" rel="stylesheet">
 
+    <!-- Richtext Editor -->
+    <link rel="stylesheet" href="./css/style-richtext-editor.css" />
+    <link rel="stylesheet" href="./css/rte_theme_default.css" />
+
     <!-- Responsive CSS -->
     <link href="css/responsive.css" rel="stylesheet">
 
@@ -45,7 +49,10 @@
 
     <script src="js/load-heder-footer-sidebar.js"></script>
 
-    
+    <!-- <script src="//cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script> -->
+    <script src="./ckeditor/ckeditor.js"></script>
+
+
 </head>
 
 <body>
@@ -102,10 +109,10 @@
                                     <span class="dwqa-question-actions"></span>
                                 </div>
                                 <div class="dwqa-question-content">
-                                    <p>Tôi muốn DWQA từng có thể “ghim” tối đa 3 bài đăng cùng một lúc trong trang câu hỏi, 
-                                        cho phép người dùng xem bất kỳ bài đăng nào mà chúng tôi cho là quan trọng một cách dễ dàng. 
-                                        Tôi chỉ có thể ghim một bài vào bất kỳ lúc nào. 
-                                        Ai đó có thể vui lòng giải thích tại sao không? 
+                                    <p>Tôi muốn DWQA từng có thể “ghim” tối đa 3 bài đăng cùng một lúc trong trang câu hỏi,
+                                        cho phép người dùng xem bất kỳ bài đăng nào mà chúng tôi cho là quan trọng một cách dễ dàng.
+                                        Tôi chỉ có thể ghim một bài vào bất kỳ lúc nào.
+                                        Ai đó có thể vui lòng giải thích tại sao không?
                                         Tôi thực sự thích nó.</p>
                                 </div>
                                 <footer class="dwqa-question-footer">
@@ -150,8 +157,7 @@
                                         <span class="dwqa-pick-best-answer">Trả lời tốt nhất</span>
                                         <div class="dwqa-answer-meta">
                                             <span><a href="#"><img alt="authors" src="images/author2.png" />Kiki
-                                                    Ralp</a> đã trả lời 1 năm trước</span> <span
-                                                class="dwqa-answer-actions"></span>
+                                                    Ralp</a> đã trả lời 1 năm trước</span> <span class="dwqa-answer-actions"></span>
                                         </div>
                                         <div class="dwqa-answer-content">
                                             <p>My suggestion to developers team is to great a tab that we can click on
@@ -164,8 +170,7 @@
                                                 <!-- #start comment-## -->
                                                 <div class="dwqa-comment">
                                                     <div class="dwqa-comment-meta">
-                                                        <a href="#"><img alt="author" src="images/author2.png"
-                                                                class="avatar avatar-16 photo" />Antawn Fiennes</a>
+                                                        <a href="#"><img alt="author" src="images/author2.png" class="avatar avatar-16 photo" />Antawn Fiennes</a>
                                                         đã phản hồi 1 năm trước
                                                         <div class="dwqa-comment-actions">
                                                         </div>
@@ -186,6 +191,15 @@
                                 <!-- #end list answer-## -->
                             </div>
                             <!-- End Answer item -->
+                            <label for="question-content">Bình luận</label>
+                            <div>
+                                <textarea name="comment" id="comment"></textarea>
+                                <script>
+                                    CKEDITOR.replace('comment');
+                                </script>
+                            </div>
+
+                            <input id="comment-btn" type="submit" value="Gửi" name="wp-submit" class="themeix-btn hover-bg">
 
                         </div>
                     </div>
@@ -222,6 +236,8 @@
     <!-- Mean Menu -->
     <script src="js/jquery.meanmenu.js"></script>
 
+    <script type="text/javascript" src="./js/rte.js"></script>
+    <script type="text/javascript" src='./js/all_plugins.js'></script>
 
 
     <!-- Main Js -->

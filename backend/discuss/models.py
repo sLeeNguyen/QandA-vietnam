@@ -23,8 +23,9 @@ from tags.models import Tag
 
 
 class Post(models.Model):
-    score = models.PositiveIntegerField(default=0)
+    score = models.IntegerField(default=0)
     content = models.TextField(blank=False, null=False)
+    short_content = models.TextField(blank=False, null=False)
     date_create = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
 

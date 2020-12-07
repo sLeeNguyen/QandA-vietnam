@@ -24,7 +24,8 @@ urlpatterns = [
     path('questions/create/', views.QuestionCreationView.as_view(), name='create'),
     path('questions/<int:id>/', views.QuestionDetailView.as_view(), name='detail'),
     path('questions/<int:id>/update-delete/', views.QuestionUpdateDestroyView.as_view(), name='update'),
-    path('questions/<int:id>/answers/', views.AnswerListView.as_view(), name='answers-belong-to-question'),
+    path('questions/<int:id>/answers/', views.AnswerListInQuestionView.as_view(), name='answers-belong-to-question'),
     path('answers/create/', views.AnswerCreationView.as_view(), name='answer-creation'),
     path('answers/<int:id>/update-delete/', views.AnswerUpdateDestroyView.as_view(), name='answer-update'),
+    path('<str:type>/<int:id>/<str:action>/', views.VoteView.as_view(), name='vote'),
 ]

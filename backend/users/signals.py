@@ -14,6 +14,8 @@
 #     limitations under the License.
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+import random
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -27,4 +29,5 @@ def create_profile(sender, instance, created, **kwargs):
     display_name field will be set to username by default
     """
     if created:
-        Profile.objects.create(owner=instance, display_name=instance.username)
+        avt_default = 'avt/avatar-%s.png' % str(random.randint(1, 8))
+        Profile.objects.create(owner=instance, display_name=instance.username, avatar=avt_default)

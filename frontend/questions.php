@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Site Title -->
     <title>Question</title>
 
@@ -79,8 +79,7 @@
                         <div class="dwqa-container">
                             <div class="dwqa-questions-archive">
                                 <form id="dwqa-search" class="dwqa-search">
-                                    <input data-nonce="fc987a6f77" type="text" placeholder="What do you want to know?"
-                                        name="qs" class="ui-autocomplete-input" autocomplete="off" required>
+                                    <input data-nonce="fc987a6f77" type="text" placeholder="What do you want to know?" name="qs" class="ui-autocomplete-input" autocomplete="off" required>
                                     <button type="submit"><i class="fa fa-search"></i></button>
                                 </form>
                                 <div class="dwqa-question-filter">
@@ -105,30 +104,65 @@
                                 <!-- #start list question-## -->
                                 <div class="dwqa-questions-list">
                                     <!-- #start question-## -->
-                                    <div class="dwqa-question-item dwqa-sticky">
-                                        <header class="dwqa-question-title">
-                                            <a href="#">How to pin a sticky question to the top of the questions
-                                                page?</a>
-                                        </header>
-                                        <div class="dwqa-question-meta">
-                                            <span class="dwqa-status dwqa-status-open" title="Open">Open</span>
-                                            <span><a href="#">Kiki Ralp</a> đã hỏi 1 năm trước</span>
-                                            <span class="dwqa-question-category"> • <a href="#"
-                                                    rel="tag">Công nghệ</a></span>
+                                    <div class="row dwqa-sticky">
+                                        <!-- #info answer-## -->
+                                        <div class="left-answer col-md-2">
+                                            <div>
+                                                <div class="dwqa-votes-count"><strong>24904564<br></strong>votes</div>
+                                                <div class="dwqa-answers-count"><strong>413<br></strong>Câu trả lời</div>
+                                                <span class="dwqa-views-count">7 Lượt xem</span>
+                                            </div>
                                         </div>
-                                        <div class="dwqa-question-stats">
-                                            <span class="dwqa-views-count"><strong>24904</strong>Lượt xem</span>
-                                            <span class="dwqa-answers-count"><strong>7</strong>Câu trả lời</span>
-                                            <span class="dwqa-votes-count"><strong>4</strong>Bình chọn</span>
+
+                                        <div class="right-answer col-md-10">
+                                            <!-- #tilte-## -->
+                                            <header class="dwqa-question-title">
+                                                <a href="#">How to pin a sticky question to the top of the questions
+                                                    page?</a>
+                                            </header>
+                                            <!-- #content-## -->
+                                            <div class="dwqa-question-content">
+                                                <p>
+                                                    Các bạn đoán xem hôm nay tôi đã gặp chuyện gì nào?
+                                                    Chiếc laptop của tôi tự nhiên nó bị xì khói , chập mạch một lúc
+                                                    thì nó đột nhiên đem xì . Sau đó tôi không khởi động lại được
+                                                    Các bro giúp tôi với :(((
+                                                </p>
+                                            </div>
+                                            <!-- #tag and info user-## -->
+                                            <div class="row tag-user">
+                                                <!-- #tag-## -->
+                                                <div class="col-md-8 tag-answer">
+                                                    <a href="#"> <button>Công nghệ</button> </a>
+                                                    <a href="#"> <button>Laptop</button> </a>
+                                                </div>
+                                                <!-- #info user-## -->
+                                                <div class="col-md-4 user-answer">
+                                                    <div class="time-answer">đã hỏi 16:23 - 27 tháng ba</div>
+                                                    <div class="row">
+                                                        <div class="col-md-2 avatar-user">
+                                                            <img src="images/tung.png">
+                                                        </div>
+                                                        <div class="col-md-10 info-user">
+                                                            <a href="#">Tung</a>
+                                                            <ul class="menu">
+                                                                <li class="first"><i class="fa fa-pencil-square"></i> 444K</li>
+                                                                <li class="second"><i class="fa fa-git-square"></i> 75</li>
+                                                                <li class="third"><i class="fa fa-youtube-square"></i> 195</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <!-- #end question-##                                                        -->
+                                    <hr>
+                                    <!-- #end question-##  -->
+
                                 </div>
                                 <!-- #end list question-## -->
                                 <div class="dwqa-questions-footer">
-                                    <div class="dwqa-pagination"><span class="dwqa-page-numbers dwqa-current">1</span><a
-                                            class="dwqa-page-numbers" href="#">2</a><a
-                                            class="dwqa-next dwqa-page-numbers" href="#">Tiếp</a></div>
+                                    <div class="dwqa-pagination"><span class="dwqa-page-numbers dwqa-current">1</span><a class="dwqa-page-numbers" href="#">2</a><a class="dwqa-next dwqa-page-numbers" href="#">Tiếp</a></div>
                                 </div>
                             </div>
                         </div>
@@ -163,8 +197,7 @@
     <!-- Google Map -->
     <script src="https://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 
-    <!-- Mean Menu -->
-    <script src="js/jquery.meanmenu.js"></script>
+
 
 
     <!-- Main Js -->

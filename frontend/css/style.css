@@ -1776,7 +1776,7 @@ span.comment-date {
     line-height: 24px;
 }
 .comment-text > p {
-    color: ;
+    color: #000;
     font-size: 15px;
     line-height: 24px;
     margin-bottom: 0;
@@ -2056,20 +2056,24 @@ a.comment-reply:hover {
     line-height: 26px;
 }
 .dwqa-views-count {
-    background-color: #2196F3;
-    color: #fff;
+    /* background-color: #2196F3; */
+    color: rgb(252, 126, 9);
     font-size: 13px;
+    padding-top: 10px;
 }
 .dwqa-answers-count {
-    background-color: #f26c4f;
+    background-color: #1aa11a;
     color: #fff;
     font-size: 13px;
+    padding-top: 25%;
+    padding-bottom: 25%;
+
 }
-.dwqa-votes-count {
+/* .dwqa-votes-count {
     background-color: #71c668;
     color: #fff;
     font-size: 13px;
-}
+} */
 .dwqa-page-numbers {
     display: inline-block;
     width: 35px;
@@ -2117,6 +2121,11 @@ a.comment-reply:hover {
 22. Answers Page
 
 ***************************************************/
+
+.dwqa-sticky{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
 
 .dwqa-breadcrumbs {
     margin-bottom: 30px;
@@ -2354,6 +2363,79 @@ a.comment-reply:hover {
 .themeix-blog-h {
     padding-top: 0;
 }
+
+#comment-btn{
+    margin-top: 10px;
+    float: right;
+}
+
+.left-answer div{
+    text-align: center;
+    margin-top: 0%;
+    margin-bottom: 5%;
+}
+
+.left-answer div strong{
+    font-size: 22px;
+}
+
+.tag-answer a button{
+    border: rgb(255, 255, 255);
+    background-color: #c5daee;
+    color: rgb(93, 120, 240);
+}
+
+.tag-answer a button:hover{
+    background-color: #68d3f3;
+    color: rgb(22, 50, 170);
+}
+
+.time-answer{
+    margin-left: -15px;
+}
+
+.user-answer{
+    padding: 0px ;
+}
+
+.avatar-user{
+    padding: 0;
+    margin-left: 0px;
+}
+
+.info-user{
+    padding-right: 0 !important;
+
+}
+
+.info-user a{
+    font-size: 20px;
+    color: #00aced;
+}
+
+.info-user a:hover{
+    font-size: 20px;
+    color: #1000ed;
+}
+
+.menu li {
+    display:inline;
+    font-size: 13px;
+    margin-right: 3%;
+}
+
+.menu .first{
+    color: #2904f8;
+}
+
+.menu .second{
+    color: #000305;
+}
+
+.menu .third{
+    color: #f80707;
+}
+
 /***************************************************
 
 23. Right Sidebar Page

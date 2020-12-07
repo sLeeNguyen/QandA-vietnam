@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Site Title -->
     <title>Ask Question</title>
 
@@ -46,14 +46,16 @@
 
     <script src="js/load-heder-footer-sidebar.js"></script>
 
-    
+    <script src="./ckeditor/ckeditor.js"></script>
+
+
 </head>
 
 <body>
 
-   <!-- Start Header -->
-   <header id="header"></header>
-   <!-- End Header -->
+    <!-- Start Header -->
+    <header id="header"></header>
+    <!-- End Header -->
 
     <!-- Start Page Banner Area -->
     <div class="page-banner-area">
@@ -82,8 +84,12 @@
                                 <input id="question-title" type="text" name="question-title" />
 
                                 <label for="question-content">Chi tiết câu hỏi</label>
-                                <textarea name="question-content" id="question-content" cols="30" rows="10"></textarea>
-
+                                <div>
+                                    <textarea name="cauhoi" id="cauhoi"></textarea>
+                                    <script>
+                                        CKEDITOR.replace('cauhoi');
+                                    </script>
+                                </div>
                                 <label for="question-category">Thể loại</label>
                                 <select name="question-category" id="question-category" class="postform">
                                     <option value="-1">Chọn loại câu hỏi</option>
@@ -95,12 +101,8 @@
                                 <label for="question-tag">Tag</label>
                                 <input id="question-tag" type="text" name="question-tag" />
 
-                                <input id="wp-submit" type="submit" value="Gửi" name="wp-submit"
-                                    class="themeix-btn hover-bg">
+                                <input id="wp-submit" type="submit" value="Gửi" name="wp-submit" class="themeix-btn hover-bg">
                             </form>
-
-
-
                         </div>
                     </div>
                 </div>
@@ -112,12 +114,13 @@
         </div>
     </div>
     <!-- End  Questions Area -->
-   
-    
-    
+
+
+
     <!-- Start Footer Area -->
     <footer id="footer"></footer>
     <!-- End Footer Area -->
+
 
 
     <!-- jquery min -->
@@ -134,11 +137,6 @@
 
     <!-- Google Map -->
     <script src="https://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
-
-    <!-- Mean Menu -->
-    <script src="js/jquery.meanmenu.js"></script>
-
-
 
     <!-- Main Js -->
     <script src="js/main.js"></script>

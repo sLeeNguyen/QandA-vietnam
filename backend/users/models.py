@@ -90,11 +90,13 @@ class Profile(models.Model):
 
 
 class Vote(models.Model):
+    UP_VOTE = 'up'
+    DOWN_VOTE = 'down'
     VOTE_CHOICES = [
-        ('up', _('up vote')),
-        ('down', _('down vote')),
+        (UP_VOTE, _('up vote')),
+        (DOWN_VOTE, _('down vote')),
     ]
-    date_vote = models.DateTimeField(default=timezone.now)
+    date_vote = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=4, blank=False, null=False, choices=VOTE_CHOICES)
     user = models.ForeignKey(User, related_name='votes', on_delete=models.CASCADE)
     object_id = models.IntegerField()

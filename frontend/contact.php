@@ -205,8 +205,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnh74UN6BKgq9U5fMNGhdZOSpmM_QnZqs"
         type="text/javascript"></script>
 
-    <!-- Mean Menu -->
-    <script src="js/jquery.meanmenu.js"></script>
+    
 
 
     <!-- Main Js -->

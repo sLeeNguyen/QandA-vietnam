@@ -122,8 +122,7 @@
     <!-- Google Map -->
     <script src="https://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 
-    <!-- Mean Menu -->
-    <script src="js/jquery.meanmenu.js"></script>
+    
 
 
     <!-- Main Js -->

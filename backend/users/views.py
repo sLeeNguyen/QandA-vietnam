@@ -15,16 +15,15 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 import jwt
+from jwt.exceptions import DecodeError
 
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import (status, permissions)
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from . import serializers
 from .utils import Util
@@ -45,14 +44,12 @@ class RegisterView(GenericAPIView):
             # send an email to verify account
             user = serializer.save()
 
-            token = RefreshToken.for_user(user).access_token
-            current_site = get_current_site(request).domain
-            relative_link = reverse('users:email_verify')
-            abs_url = 'http://'+current_site+relative_link+'?token='+str(token)
+            token = RefreshToken.for_user(user)
+            abs_url = f"{settings.EMAIL_VERIFY_URL}/?refresh={token}&token={token.access_token}"
             body = 'Hi {username},\n\n' \
                    'Click here to verify your account: \n{link}\n\n' \
                    'Thanks,\n' \
-                   'QandA-vietnam'.format(username=user.username, link=abs_url)
+                   'QandA-vietnam.'.format(username=user.username, link=abs_url)
             Util.send_email(
                 subject='QandA-vietnam Team - Confirm your email address',
                 body=body,
@@ -72,7 +69,7 @@ class LoginView(GenericAPIView):
     serializer_class = serializers.LoginSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
 
         return Response(
@@ -87,18 +84,23 @@ class EmailVerifyView(GenericAPIView):
     """
     def get(self, request):
         token = request.GET.get('token')
+        refresh_token = request.GET.get('refresh')
         try:
             payload = jwt.decode(token, key=settings.SIMPLE_JWT['SIGNING_KEY'])
             user = User.objects.get(pk=payload['user_id'])
             user.is_verified = True
             user.save()
+            try:
+                RefreshToken(token=refresh_token).blacklist()
+            except TokenError:
+                pass
             return Response(
-                data={'message': 'Successfully activated'},
+                data={'message': 'Activated'},
                 status=status.HTTP_200_OK,
             )
         except jwt.ExpiredSignatureError:
             err_msg = 'Activation expired'
-        except (ObjectDoesNotExist, jwt.exceptions.DecodeError):
+        except (ObjectDoesNotExist, DecodeError):
             err_msg = 'Invalid token'
 
         return Response(
