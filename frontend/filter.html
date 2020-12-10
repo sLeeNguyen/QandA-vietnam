@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.sstatic.net/Js/stub.en.js?v=b28b3b792172"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Shared/stacks.css?v=6ddbf6f8bec4">
+    <link rel="stylesheet" type="text/css" href="https://cdn.sstatic.net/Sites/stackoverflow/primary.css?v=b8c48234a14f">
+    <script>
+        StackExchange.init({ "locale": "en", "serverTime": 1607583724, "routeName": "Questions/List", "stackAuthUrl": "https://stackauth.com", "networkMetaHostname": "meta.stackexchange.com", "site": { "name": "Stack Overflow", "description": "Q&A for professional and enthusiast programmers", "isNoticesTabEnabled": true, "enableNewTagCreationWarning": true, "insertSpaceAfterNameTabCompletion": false, "id": 1, "childUrl": "https://meta.stackoverflow.com", "styleCodeWithHighlightjs": true, "negativeVoteScoreFloor": null, "enableSocialMediaInSharePopup": true, "protocol": "https" }, "user": { "fkey": "91f6ad25511784b91a245ea7b027e314e051e74ef6d9820ca6c0c820f8b9e16b", "tid": "4cda16ab-6df0-965c-6d2a-d1d05c33a3a5", "rep": 0, "isAnonymous": true, "isAnonymousNetworkWide": true }, "events": { "postType": { "question": 1 }, "postEditionSection": { "title": 1, "body": 2, "tags": 3 } }, "story": { "minCompleteBodyLength": 75, "likedTagsMaxLength": 300, "dislikedTagsMaxLength": 300 }, "jobPreferences": { "maxNumDeveloperRoles": 2, "maxNumIndustries": 4 }, "svgIconPath": "https://cdn.sstatic.net/Img/svg-icons", "svgIconHash": "41ca7234d37d" }, { "userProfile": { "openGraphAPIKey": "4a307e43-b625-49bb-af15-ffadf2bda017" }, "userMessaging": { "showNewFeatureNotice": true }, "tags": {}, "subscriptions": { "defaultMaxTrueUpSeats": 1000 }, "snippets": { "renderDomain": "stacksnippets.net", "snippetsEnabled": true }, "slack": { "sidebarAdDismissCookie": "slack-sidebar-ad", "sidebarAdDismissCookieExpirationDays": 60.0 }, "site": { "allowImageUploads": true, "enableImgurHttps": true, "enableUserHovercards": true, "forceHttpsImages": true, "styleCode": true }, "intercom": { "appId": "inf0secd", "hostBaseUrl": "https://stacksnippets.net" }, "paths": {}, "monitoring": { "clientTimingsAbsoluteTimeout": 30000, "clientTimingsDebounceTimeout": 1000 }, "mentions": { "maxNumUsersInDropdown": 50 }, "markdown": { "enableTables": true }, "flags": { "allowRetractingCommentFlags": true, "allowRetractingFlags": true }, "comments": {}, "accounts": { "currentPasswordRequiredForChangingStackIdPassword": true } });
+        StackExchange.using.setCacheBreakers({ "js/adops.en.js": "22a9bd59b1e9", "js/ask.en.js": "b863c5033e15", "js/begin-edit-event.en.js": "b9716b3f6dcb", "js/events.en.js": "5473b7a0bf4b", "js/explore-qlist.en.js": "2a9a628fca7f", "js/full-anon.en.js": "ef57c5ac049e", "js/full.en.js": "f81a3c6dcad5", "js/help.en.js": "ff3f6f73f7d3", "js/highlightjs-loader.en.js": "8f6befd6e2e7", "js/inline-tag-editing.en.js": "88510a5b8778", "js/keyboard-shortcuts.en.js": "d142949d080d", "js/markdown-it-loader.en.js": "6b769eb223ea", "js/mobile.en.js": "756191178b8a", "js/moderator.en.js": "757f880a7d73", "js/postCollections-transpiled.en.js": "5e7b256b3872", "js/post-validation.en.js": "80f3fe55d69f", "js/prettify-full.en.js": "8f956daba90c", "js/question-editor.en.js": "", "js/review.en.js": "b4b69ede3fdf", "js/review-v2-transpiled.en.js": "84f025f808fb", "js/revisions.en.js": "95ed484fb037", "js/stacks-editor.en.js": "c6d2989f4cb2", "js/tageditor.en.js": "0ffdcf3fc9c4", "js/tageditornew.en.js": "a2d97d0e7ff5", "js/tagsuggestions.en.js": "9b2c5d9791d2", "js/wmd.en.js": "d7dd204e6a8e", "js/snippet-javascript-codemirror.en.js": "be648ba84146" });
+        StackExchange.using("gps", function () {
+            StackExchange.gps.init(true);
+        });
+    </script>
+    <script>
+        StackExchange.ready(function () {
+            initTagRenderer("".split(" "), "".split(" "));
+            StackExchange.userQuestionList.init({
+                sharingUrl: ""
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div id="content" class="snippet-hidden">
+            <div id="mainbar" role="main" aria-labelledby="h-all-questions">
+                <div class="grid">
+                    <h1 class="grid--cell fl1 fs-headline1 mb24">All Questions</h1>
+                    <div class="ml12 aside-cta grid--cell print:d-none">
+                        <a href="" class="ws-nowrap s-btn s-btn__primary">Ask Question</a>
+                    </div>
+                </div>
+                <div data-controller="se-uql" data-se-uql-id="" data-se-uql-sanitize-tag-query="false">
+                    <div class="grid ai-center jc-space-between mb12 sm:fd-column sm:ai-stretch">
+                        <div class="fs-body3 grid--cell fl1 mr12 sm:mr0 sm:mb12">20,536,821 questions</div>
+                        <div class="uql-nav grid--cell" data-action="se-uql-list:edit-current-requested@document->se-uql#toggleEditor">
+                            <div class="grid ai-center jc-space-between">
+                                <div class="js-uql-navigation s-btn-group grid--cell mr16 ff-row-nowrap">
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm grid d-flex is-selected" data-nav-value="Newest" href="/questions?tab=Newest" data-shortcut="N">
+                                        <div class="grid--cell">Newest</div>
+                                    </a>
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm grid d-flex" data-nav-value="Active" href="/questions?tab=Active" data-shortcut="A">
+                                        <div class="grid--cell">Active</div>
+                                    </a>
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm grid d-flex uql-nav--expanded-item" data-nav-value="Bounties" href="/questions?tab=Bounties" data-shortcut="E">
+                                        <div class="grid--cell">Bountied</div>
+                                        <div class="s-badge s-badge__bounty s-badge__bounty s-badge__sm lh-xs ml4 px4 grid--cell">
+                                            413
+                                        </div>
+                                    </a>
+                                    <a class="s-btn s-btn__muted s-btn__outlined s-btn__sm grid d-flex uql-nav--expanded-item" data-nav-value="Unanswered" href="/questions?tab=Unanswered" data-shortcut="U">
+                                        <div class="grid--cell">Unanswered</div>
+                                    </a>
+                                    <button class="s-btn s-btn__muted s-btn__outlined s-btn__sm s-btn__dropdown" role="button" data-controller="s-popover" data-action="s-popover#toggle" data-target="se-uql.toggleMoreButton" aria-haspopup="true" aria-expanded="false" aria-controls="uql-more-popover">
+                                        More
+                                    </button>
+                                </div>
+                                <div class="s-popover z-dropdown ws2" id="uql-more-popover" data-target="se-uql.morePopover">
+                                    <div class="s-popover--arrow"></div>
+                                    <ul class="list-reset mtn8 mbn8 js-uql-navigation">
+                                        <li class="uql-item my0 uql-nav--collapsed-item">
+                                            <a href="/questions?tab=Bounties" class="mln12 mrn12 px12 py6 fl1 s-block-link" data-shortcut="">
+                                                Bountied
+                                                <span class="s-badge s-badge__bounty s-badge__bounty s-badge__sm lh-xs px4">
+                                                    413
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="uql-item my0 uql-nav--collapsed-item">
+                                            <a href="/questions?tab=Unanswered" class="mln12 mrn12 px12 py6 fl1 s-block-link" data-shortcut="">
+                                                Unanswered
+                                            </a>
+                                        </li>
+                                        <li class="uql-item my0">
+                                            <a href="/questions?tab=Frequent" class="mln12 mrn12 px12 py6 fl1 s-block-link" data-shortcut="F">
+                                                Frequent
+                                            </a>
+                                        </li>
+                                        <li class="uql-item my0">
+                                            <a href="/questions?tab=Votes" class="mln12 mrn12 px12 py6 fl1 s-block-link" data-shortcut="V">
+                                                Votes
+                                            </a>
+                                        </li>
+                                        <li class="uql-item uql-item__separator bg-black-075 d:bg-black-025"></li>
+                                        <li class="uql-item my0">
+                                            <span class="s-block-link c-default fc-black-200 mln12 mrn12 px12 py6">
+                                                Unanswered (my tags)
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="grid--cell">
+                                    <button class="s-btn s-btn__filled s-btn__sm s-btn__icon ws-nowrap" role="button" data-controller="s-expandable-control" data-s-expandable-control-toggle-class="is-selected" data-target="se-uql.toggleFormButton" aria-expanded="false" aria-controls="uql-form">
+                                        <svg aria-hidden="true" class="sm:d-none va-middle svg-icon iconGearSm" width="14" height="14" viewBox="0 0 14 14">
+                                            <path d="M8.17 11.42l-.39 1.53a6.07 6.07 0 01-1.58 0l-.39-1.53c-.39-.1-.75-.26-1.1-.46l-1.35.8c-.42-.31-.8-.69-1.12-1.1l.8-1.37c-.2-.34-.35-.7-.46-1.1L1.05 7.8a6.06 6.06 0 010-1.57l1.53-.4c.1-.4.25-.76.45-1.11l-.8-1.36c.32-.42.7-.8 1.1-1.11l1.36.8c.35-.2.73-.36 1.13-.47l.4-1.53a6.06 6.06 0 011.55 0l.4 1.53c.4.1.78.26 1.13.47l1.36-.8c.41.31.78.68 1.1 1.1l-.8 1.36c.2.35.36.73.46 1.13l1.53.39a6.06 6.06 0 010 1.57l-1.53.39c-.1.4-.27.77-.47 1.11l.8 1.36c-.32.42-.7.8-1.11 1.11l-1.36-.8c-.34.2-.71.35-1.1.45zM7 9a2 2 0 100-4 2 2 0 000 4z" />
+                                        </svg> 
+                                        Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="s-expandable ps-relative z-active" id="uql-form" data-target="se-uql.form" data-action="se-uql#navigate">
+                        <input name="uqlId" type="hidden" />
+                        <div class="s-expandable--content">
+                            <div class="bg-black-050 ba bc-black-100 bar-sm mb16">
+                                <div class="px12 py16">
+                                    <div class="grid gs32 fw-wrap">
+                                        <div class="grid--cell">
+                                            <fieldset class="grid gs8 gsy fd-column">
+                                                <legend class="grid--cell s-label px0">Filter by</legend>
+                                                <div class="grid--cell">
+                                                    <div class="grid gs4 gsx ai-center">
+                                                        <div class="grid--cell">
+                                                            <input class="s-checkbox d-block" type="checkbox" name="filterId" value="NoAnswers" id="63beb533-9ec7-4b1f-9d58-544f043dd08f" />
+                                                        </div>
+                                                        <label class="grid--cell s-label fw-normal ws-nowrap" for="63beb533-9ec7-4b1f-9d58-544f043dd08f">
+                                                            No answers
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="grid--cell">
+                                                    <div class="grid gs4 gsx ai-center">
+                                                        <div class="grid--cell">
+                                                            <input class="s-checkbox d-block" type="checkbox" name="filterId" value="NoAcceptedAnswer" id="7f7fdafc-09c4-4d30-b7e2-c57b97ab61f0" />
+                                                        </div>
+                                                        <label class="grid--cell s-label fw-normal ws-nowrap" for="7f7fdafc-09c4-4d30-b7e2-c57b97ab61f0">
+                                                            No accepted answer
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="grid--cell">
+                                                    <div class="grid gs4 gsx ai-center">
+                                                        <div class="grid--cell">
+                                                            <input class="s-checkbox d-block" type="checkbox" name="filterId" value="Bounty" id="c18a22fd-80e6-47c9-86f2-57a9a5710cfb" />
+                                                        </div>
+                                                        <label class="grid--cell s-label fw-normal ws-nowrap" for="c18a22fd-80e6-47c9-86f2-57a9a5710cfb">
+                                                            Has bounty
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        <div class="grid--cell">
+                                            <fieldset class="grid gs8 gsy fd-column">
+                                                <legend class="grid--cell s-label px0">Sorted by</legend>
+                                                <div class="grid--cell">
+                                                    <div class="grid gs4 gsx ai-center">
+                                                        <div class="grid--cell">
+                                                            <input class="s-radio d-block" type="radio" name="sortId" value="Newest" checked="checked" id="8c4ad4d1-4f0b-4103-a43e-107b6ebf59ad" />
+                                                        </div>
+                                                        <label class="grid--cell s-label fw-normal ws-nowrap" for="8c4ad4d1-4f0b-4103-a43e-107b6ebf59ad">
+                                                            Newest
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="grid--cell">
+                                                    <div class="grid gs4 gsx ai-center">
+                                                        <div class="grid--cell">
+                                                            <input class="s-radio d-block" type="radio" name="sortId" value="RecentActivity" id="ce444ebb-d4ea-4fe8-8d04-e36f74d11cb5" />
+                                                        </div>
+                                                        <label class="grid--cell s-label fw-normal ws-nowrap" for="ce444ebb-d4ea-4fe8-8d04-e36f74d11cb5">
+                                                            Recent activity
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="grid--cell">
+                                                    <div class="grid gs4 gsx ai-center">
+                                                        <div class="grid--cell">
+                                                            <input class="s-radio d-block" type="radio" name="sortId" value="MostVotes" id="35c6a212-274d-4de9-a999-50424237a57e" />
+                                                        </div>
+                                                        <label class="grid--cell s-label fw-normal ws-nowrap" for="35c6a212-274d-4de9-a999-50424237a57e">
+                                                            Most votes
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="grid--cell">
+                                                    <div class="grid gs4 gsx ai-center">
+                                                        <div class="grid--cell">
+                                                            <input class="s-radio d-block" type="radio" name="sortId" value="MostFrequent" id="7035bb17-bb37-4128-9a5b-ce68ff4b3a9e" />
+                                                        </div>
+                                                        <label class="grid--cell s-label fw-normal ws-nowrap" for="7035bb17-bb37-4128-9a5b-ce68ff4b3a9e">
+                                                            Most frequent
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="grid--cell">
+                                                    <div class="grid gs4 gsx ai-center">
+                                                        <div class="grid--cell">
+                                                            <input class="s-radio d-block" type="radio" name="sortId" value="BountyEndingSoon" id="d911b1c7-f392-4170-8143-0230dfcd71f8" />
+                                                        </div>
+                                                        <label class="grid--cell s-label fw-normal ws-nowrap" for="d911b1c7-f392-4170-8143-0230dfcd71f8">
+                                                            Bounty ending soon
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        <div class="grid--cell">
+                                            <fieldset class="grid gs8 gsy fd-column">
+                                                <legend class="grid--cell s-label px0">Tagged with</legend>
+                                                <div class="grid--cell">
+                                                    <div class="grid gs4 gsx ai-center">
+                                                        <div class="grid--cell">
+                                                            <input class="s-radio d-block" type="radio" name="tagModeId" value="Watched" id="07441625-be8f-4394-9545-8d446fdfdc4c" />
+                                                        </div>
+                                                        <label class="grid--cell s-label fw-normal ws-nowrap" for="07441625-be8f-4394-9545-8d446fdfdc4c">
+                                                            My watched tags
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="grid--cell">
+                                                    <div class="grid gs4 gsx ai-center">
+                                                        <div class="grid--cell">
+                                                            <input class="s-radio d-block" type="radio" name="tagModeId" value="Specified" checked="checked" id="a467e773-8026-4557-99fc-83326565263b" />
+                                                        </div>
+                                                        <label class="grid--cell s-label fw-normal ws-nowrap" for="a467e773-8026-4557-99fc-83326565263b">
+                                                            The following tags:
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                            <div class="ps-relative ml24 mt8 ws2">
+                                                <input id="uql-modal-tag-input" class="w100 s-input" name="tagQuery" data-target="se-uql.tagQuery" type="text" size="60" tabindex="0" placeholder="e.g. javascript or java">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p12 bt bc-black-100">
+                                    <div class="grid">
+                                        <div class="grid gs4 gsx fl1">
+                                            <button class="s-btn s-btn__sm s-btn__primary grid--cell" type="submit" data-target="se-uql.applyButton">
+                                                Apply filter
+                                            </button>
+                                        </div>
+                                        <div class="grid--cell">
+                                            <button class="s-btn s-btn__sm" data-action="se-uql#cancelEditor" type="button">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
