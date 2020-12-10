@@ -15,6 +15,7 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 import logging
+from collections import OrderedDict
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
@@ -31,10 +32,9 @@ from rest_framework.utils import json
 from . import serializers
 from .models import (Question, Answer)
 from tags.models import Tag
-from users.models import Vote
 from .exceptions import FieldErrorException, ParamErrorException
 from .permissions import IsOwner
-from .pagination import AnswerResultSetPagination
+from .pagination import ResultSetPagination
 from .utils import strip_tags
 from elasticsearch_client import elasticsearch
 
@@ -43,7 +43,7 @@ LOGGER = logging.getLogger(__name__)
 
 class QuestionListView(ListAPIView):
     queryset = Question.objects.all()
-    pagination_class = AnswerResultSetPagination
+    pagination_class = ResultSetPagination
 
     def get(self, request, *args, **kwargs):
         page = self.paginate_queryset(self.filter_queryset(self.queryset))
@@ -57,7 +57,7 @@ class QuestionListView(ListAPIView):
                     'date_create': question.date_create,
                     'score': question.score,
                     'best_answer': question.best_answer,
-                    'num_of_votes': question.num_votes,
+                    'num_of_votes': question.votes.all().count(),
                     'num_of_answers': question.answers.count(),
                     'owner': serializers.UserBasicInfoSerializer(
                         question.owner, context={'request': request}).data,
@@ -85,7 +85,80 @@ class QuestionListView(ListAPIView):
 
 
 class SearchView(ListAPIView):
-    pass
+    queryset = Question.objects.all()
+    pagination_class = ResultSetPagination
+
+    def get(self, request, *args, **kwargs):
+        # print(request.META.get('HTTP_AUTHORIZATION', ''))
+        data = self.get_data()
+        self.count = data['hits']['total']['value']
+        self.total_pages = self.count // self.paginator.page_size + 1
+
+        if self.page_number > self.total_pages:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        res = []
+        for element in data['hits']['hits']:
+            if element['_index'] == "question":
+                question = Question.objects.get(pk=element['_id'])
+                content = element['highlight']['content'][0] if 'highlight' in element else question.short_content
+                obj_dict = {
+                    'id': question.id,
+                    'title': question.title,
+                    'content': content,
+                    'date_create': question.date_create,
+                    'score': question.score,
+                    'best_answer': question.best_answer,
+                    'num_of_votes': question.votes.all().count(),
+                    'num_of_answers': question.answers.count(),
+                    'owner': serializers.UserBasicInfoSerializer(
+                        question.owner, context={'request': request}).data,
+                    'tags': serializers.TagBasicInfoSerializer(
+                        question.tags.all(), many=True).data
+                }
+            else:
+                answer = Answer.objects.get(pk=element['_id'])
+                content = element['highlight']['content'][0] if 'highlight' in element else answer.short_content
+                obj_dict = {
+                    'id': answer.id,
+                    'content': content,
+                    'date_create': answer.date_create,
+                    'score': answer.score,
+                    'num_of_votes': answer.votes.all().count(),
+                    'owner': serializers.UserBasicInfoSerializer(
+                        answer.owner, context={'request': request}).data,
+                }
+            res.append(obj_dict)
+
+        return self.build_response(res)
+
+    def get_data(self):
+        search_query = self.request.query_params.get("q", "")
+        self.sort = self.request.query_params.get("sort", "")
+        tags = self.request.query_params.get("tags", "")
+        if tags:
+            tags = tags.split(",")
+        else:
+            tags = None
+
+        return elasticsearch.discuss_search(query=search_query,
+                                            start=self.get_start(),
+                                            size=self.paginator.get_page_size(self.request),
+                                            sort=self.sort,
+                                            tags=tags)
+
+    def get_start(self):
+        paginator = self.paginator
+        self.page_number = paginator.get_page_number(self.request)
+        return (self.page_number - 1)*paginator.get_page_size(self.request)
+
+    def build_response(self, data):
+        return Response(OrderedDict([
+            ('count', self.count),
+            ('total_pages', self.total_pages),
+            ('current_page', self.page_number),
+            ('results', data)
+        ]))
 
 
 class QuestionCreationView(CreateAPIView):
@@ -93,7 +166,6 @@ class QuestionCreationView(CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        import pdb; pdb.set_trace()
         require_fields = ['title', 'content', 'tags']
         try:
             check_require_fields(require_fields, request.data.keys())
@@ -206,7 +278,7 @@ class AnswerCreationView(CreateAPIView):
 
 class AnswerListInQuestionView(ListAPIView):
     serializer_class = serializers.AnswerDetailSerializer
-    pagination_class = AnswerResultSetPagination
+    pagination_class = ResultSetPagination
     queryset = Answer.objects.all()
     lookup_field = 'id'  # this is question_id that answers belong to
 
@@ -280,9 +352,7 @@ class VoteView(GenericAPIView):
         points = self._get_points()
         user = request.user
 
-        vote = Vote.objects.filter(user=user,
-                                   object_id=post.id,
-                                   content_type=ContentType.objects.get_for_model(post))
+        vote = user.votes.get(post=post)
         if not vote.exists():
             post.score += points['post_point']
             owner_of_post.profile.reputation_score += points['user_points']
@@ -299,8 +369,8 @@ class VoteView(GenericAPIView):
             # update with new points
             vote = vote[0]
             if vote.type != self.vote_action:
-                post.score += 2*points['post_point']
-                owner_of_post.profile.reputation_score += 2*points['user_points']
+                post.score += 2 * points['post_point']
+                owner_of_post.profile.reputation_score += 2 * points['user_points']
                 if owner_of_post.profile.reputation_score < 0:
                     owner_of_post.profile.reputation_score = 0
                 vote.type = self.vote_action
@@ -325,7 +395,7 @@ class VoteView(GenericAPIView):
             queryset = Answer.objects.all()
         return queryset
 
-    def _get_points(self,):
+    def _get_points(self, ):
         if self.vote_action == 'up':
             return {
                 'user_points': 10,

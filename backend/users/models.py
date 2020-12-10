@@ -16,9 +16,6 @@
 
 from django.db import models
 from django.contrib.auth.models import UserManager, AbstractBaseUser, PermissionsMixin
-from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
-from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -87,18 +84,3 @@ class Profile(models.Model):
     about = models.TextField(default='', blank=True)
     reputation_score = models.PositiveIntegerField(default=0)
     avatar = models.ImageField(upload_to='avt/', default='avt/default-avt.png')
-
-
-class Vote(models.Model):
-    UP_VOTE = 'up'
-    DOWN_VOTE = 'down'
-    VOTE_CHOICES = [
-        (UP_VOTE, _('up vote')),
-        (DOWN_VOTE, _('down vote')),
-    ]
-    date_vote = models.DateTimeField(auto_now_add=True)
-    type = models.CharField(max_length=4, blank=False, null=False, choices=VOTE_CHOICES)
-    user = models.ForeignKey(User, related_name='votes', on_delete=models.CASCADE)
-    object_id = models.IntegerField()
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    content_object = GenericForeignKey('content_type', 'object_id')

@@ -14,12 +14,11 @@
 #     limitations under the License.
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 from django.contrib.auth.models import AnonymousUser
-from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
-from .models import (Question, Answer)
+from .models import (Question, Answer, Vote)
 from tags.serializers import TagSerializer
-from users.models import User, Vote
+from users.models import User
 from tags.models import Tag
 
 
@@ -69,11 +68,13 @@ class AnswerDetailSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if type(user) == AnonymousUser:
             data['voted'] = 0
+            data['is_owner'] = 0
             return data
 
-        vote = Vote.objects.filter(user=user,
-                                   object_id=instance.id,
-                                   content_type=ContentType.objects.get_for_model(instance))
+        if instance.owner.id == user.id:
+            data['is_owner'] = 1
+
+        vote = user.votes.filter(post=instance)
         if vote.exists():
             vote = vote[0]
             if vote.type == Vote.UP_VOTE:
@@ -106,13 +107,16 @@ class QuestionDetailSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         user = self.context['request'].user
+
         if type(user) == AnonymousUser:
             data['voted'] = 0
+            data['is_owner'] = 0
             return data
 
-        vote = Vote.objects.filter(user=user,
-                                   object_id=instance.id,
-                                   content_type=ContentType.objects.get_for_model(instance))
+        if instance.owner.id == user.id:
+            data['is_owner'] = 1
+
+        vote = user.votes.filter(post=instance)
         if vote.exists():
             vote = vote[0]
             if vote.type == Vote.UP_VOTE:
@@ -122,3 +126,26 @@ class QuestionDetailSerializer(serializers.ModelSerializer):
         else:
             data['voted'] = 0
         return data
+
+
+class QuestionContentSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Question
+        fields = ['title', 'content', 'tags']
+
+    def to_representation(self, instance):
+        tags = ' '.join([tag.tag_name for tag in instance.tags.all()])
+        return {
+            'title': instance.title,
+            'content': instance.content,
+            'tags': tags,
+        }
+
+
+class AnswerContentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Answer
+        fields = ['content']

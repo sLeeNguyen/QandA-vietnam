@@ -45,7 +45,7 @@ question_index_settings = {
     "settings": default_settings,
     "mappings": {
         "properties": {
-            "question_id": {"type": "integer"},
+            "id": {"type": "integer"},
             "title": {"type": "text", "analyzer": "my_analyzer"},
             "content": {"type": "text", "analyzer": "my_analyzer"},
             "date_create": {"type": "date"},
@@ -59,7 +59,7 @@ answer_index_settings = {
     "settings": default_settings,
     "mappings": {
         "properties": {
-            "answer_id": {"type": "integer"},
+            "id": {"type": "integer"},
             "content": {"type": "text", "analyzer": "my_analyzer"},
             "date_create": {"type": "date"},
             "owner_id": {"type": "keyword"},
@@ -147,8 +147,44 @@ def index_document(index_name, document, doc_id):
     return es.index(index=index_name, body=document, id=doc_id)
 
 
-def search(query):
-    pass
+def discuss_search(query, start, size, sort=None, tags=None):
+    scripts = {
+        "from": start,
+        "size": size,
+        "query": {
+            "bool": {
+                "must": {
+                    "multi_match": {
+                        "query": query,
+                        "type": "most_fields",
+                        "fields": ["title", "content"]
+                    }
+                }
+            }
+        },
+        "highlight": {
+            "pre_tags": ["<b>"],
+            "post_tags": ["</b>"],
+            "fields": {
+                "content": {
+                    "type": "plain",
+                    "fragment_size": 300,
+                    "number_of_fragments": 1
+                }
+            }
+        }
+    }
+    if tags:
+        scripts['query']['bool']['filter'] = {'terms': {'tags': tags}}
+    if sort:
+        if sort == "relevance":
+            scripts['sort'] = "_score"
+        elif sort == "newest":
+            scripts['sort'] = [{"date_create": {"order": "desc"}}, "_score"]
+
+    filter_path = ['hits.total', 'hits.hits', 'hits.hits._source.highlight',
+                   'hits.hits._source._index', 'hits.hits._source._id']
+    return es.search(body=scripts, index=["question", "answer"], filter_path=filter_path)
 
 
 def question_update(question_id,
