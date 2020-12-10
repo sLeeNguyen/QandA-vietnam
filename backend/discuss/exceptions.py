@@ -20,3 +20,7 @@ class FieldErrorException(Exception):
 
 class HTMLStripErrorException(Exception):
     pass
+
+
+class ParamErrorException(Exception):
+    pass
