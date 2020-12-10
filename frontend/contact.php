@@ -189,7 +189,6 @@
     <!-- End Footer Area -->
 
     <!-- jquery min -->
-    <script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="js/jquery.min.js"></script>
 
     <!-- Bootstrap Js -->
@@ -204,9 +203,6 @@
     <!-- Google Map -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnh74UN6BKgq9U5fMNGhdZOSpmM_QnZqs"
         type="text/javascript"></script>
-
-    
-
 
     <!-- Main Js -->
     <script src="js/main.js"></script>

@@ -54,4 +54,21 @@ $(function () {
         }
     });
 
+    
 });
+function createCmt() {
+    document.getElementById("content-comment").style.display = "block";
+    document.getElementById("closeCmt").style.display = "block";
+    document.getElementById("postCmt").style.display = "block";
+
+}
+
+function closeCmt() {
+    document.getElementById("content-comment").style.display = "none";
+    document.getElementById("closeCmt").style.display = "none";
+    document.getElementById("postCmt").style.display = "none";
+}
+
+function postCmt() {
+    closeCmt();
+}

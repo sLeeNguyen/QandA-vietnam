@@ -89,6 +89,7 @@
                                     <script>
                                         CKEDITOR.replace('cauhoi');
                                     </script>
+                                   
                                 </div>
                                 <label for="question-category">Thể loại</label>
                                 <select name="question-category" id="question-category" class="postform">

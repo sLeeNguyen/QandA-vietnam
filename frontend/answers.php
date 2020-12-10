@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
-
-
 <head>
 
     <!-- meta -->
@@ -37,10 +34,6 @@
 
     <!-- Main Stylesheet -->
     <link href="./css/style.css" rel="stylesheet">
-
-    <!-- Richtext Editor -->
-    <link rel="stylesheet" href="./css/style-richtext-editor.css" />
-    <link rel="stylesheet" href="./css/rte_theme_default.css" />
 
     <!-- Responsive CSS -->
     <link href="css/responsive.css" rel="stylesheet">
@@ -134,6 +127,18 @@
                                             <p>Up to 3 posts? I love this thought.</p>
                                         </div>
                                         <!-- #end comment-## -->
+                                        <div id="create-comment">
+                                            <div onclick="createCmt();">Tạo bình luận</div>
+                                            <textarea class="form-control" id="content-comment" placeholder="Viết bình luận..."></textarea>
+                                            <div class="clearfix">
+                                                <button id="closeCmt" class="ml-2 btn btn-danger mt-2 float-right" onclick="closeCmt();">
+                                                    Đóng
+                                                </button>
+                                                <button id="postCmt" class="btn btn-primary mt-2 float-right" onclick="postCmt();">
+                                                    Thêm
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- #end list Comment-## -->
@@ -232,13 +237,6 @@
 
     <!-- Google Map -->
     <script src="https://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
-
-    <!-- Mean Menu -->
-    <script src="js/jquery.meanmenu.js"></script>
-
-    <script type="text/javascript" src="./js/rte.js"></script>
-    <script type="text/javascript" src='./js/all_plugins.js'></script>
-
 
     <!-- Main Js -->
     <script src="js/main.js"></script>

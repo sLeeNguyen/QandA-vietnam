@@ -2436,6 +2436,19 @@ a.comment-reply:hover {
     color: #f80707;
 }
 
+#content-comment{
+    margin-top: 5px;
+    display: none;
+}
+
+.clearfix button{
+    margin-top: 5px;
+    margin-left: 5px;
+    float: right;
+    display: none;
+}
+
+
 /***************************************************
 
 23. Right Sidebar Page
