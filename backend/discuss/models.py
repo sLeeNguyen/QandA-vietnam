@@ -61,7 +61,7 @@ class Comment(models.Model):
     last_update = models.DateTimeField(blank=True, null=True)
 
     owner = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
-    in_answer = models.ForeignKey(Answer, related_name='answer', on_delete=models.CASCADE)
+    in_post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
 
 
 class Vote(models.Model):
