@@ -65,16 +65,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
 
-    def vote(self, post, vote_type):
-        content_type = ContentType.objects.get_for_model(post)
-
-        return Vote.objects.create(
-            user=self,
-            content_type=content_type,
-            object_id=post.id,
-            type=vote_type
-        )
-
 
 class Profile(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')

@@ -132,7 +132,8 @@ def reputation_index(points_received,
                      date_received,
                      owner_id,
                      username,
-                     type_received):
+                     type_received,
+                     **kwargs):
     body = {
         "points_received": points_received,
         "date_received": date_received,
@@ -140,10 +141,11 @@ def reputation_index(points_received,
         "username": username,
         "type_received": type_received
     }
+    body.update(kwargs)
     return index_document(index_name='reputation', document=body)
 
 
-def index_document(index_name, document, doc_id):
+def index_document(index_name, document, doc_id=None):
     return es.index(index=index_name, body=document, id=doc_id)
 
 
@@ -225,15 +227,32 @@ def answer_update(answer_id,
     return es.update(index='question', id=answer_id, body=body)
 
 
+def reputation_vote_update(points, vote_id):
+    body = {
+        "script": {
+            "source": "ctx._source.points_received=params.points;",
+            "params": {
+                "points": points
+            }
+        },
+        "query": {
+            "term": {
+                "vote_id": vote_id
+            }
+        }
+    }
+    return es.update_by_query(index='reputation', body=body)
+
+
 def question_delete(question_id):
     """
     Delete document with id is 'question_id'
     """
-    return es.delete(index='question', id=question_id)
+    es.delete(index='question', id=question_id)
 
 
 def answer_delete(answer_id):
     """
     Delete document with id is 'answer_id'
     """
-    return es.delete(index='answer', id=answer_id)
+    es.delete(index='answer', id=answer_id)

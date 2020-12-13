@@ -16,7 +16,7 @@
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import serializers
 
-from .models import (Question, Answer, Vote)
+from .models import (Question, Answer, Vote, Comment)
 from tags.serializers import TagSerializer
 from users.models import User
 from tags.models import Tag
@@ -149,3 +149,12 @@ class AnswerContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = ['content']
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    owner = UserBasicInfoSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        exclude = ['in_post']

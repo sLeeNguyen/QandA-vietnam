@@ -19,7 +19,6 @@ from collections import OrderedDict
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
-from django.contrib.contenttypes.models import ContentType
 
 from rest_framework import (status, permissions)
 from rest_framework.generics import (
@@ -28,9 +27,10 @@ from rest_framework.generics import (
 )
 from rest_framework.response import Response
 from rest_framework.utils import json
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from . import serializers
-from .models import (Question, Answer)
+from .models import (Question, Answer, Vote)
 from tags.models import Tag
 from .exceptions import FieldErrorException, ParamErrorException
 from .permissions import IsOwner
@@ -200,6 +200,9 @@ class QuestionDetailView(RetrieveAPIView):
     lookup_field = 'id'
 
     def get(self, request, *args, **kwargs):
+        if request.auth:
+            user, token = JWTAuthentication().authenticate(request)
+            request.user = user
         instance = self.get_object()
         serializer = self.serializer_class(instance, context={'request': request})
         res = serializer.data
@@ -214,9 +217,21 @@ class QuestionDetailView(RetrieveAPIView):
         return Response(res, status=status.HTTP_200_OK)
 
 
+class QuestionContentView(RetrieveAPIView):
+    serializer_class = serializers.QuestionContentSerializer
+    # permission_classes = [permissions.IsAuthenticated, IsOwner]
+    queryset = Question.objects.all()
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(instance, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class QuestionUpdateDestroyView(UpdateAPIView, DestroyAPIView):
     serializer_class = serializers.QuestionDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
     queryset = Question.objects.all()
     lookup_field = 'id'
 
@@ -235,7 +250,7 @@ class QuestionUpdateDestroyView(UpdateAPIView, DestroyAPIView):
         """
         Update both instance in database and document in elasticsearch
         """
-        tags = get_tag_by_list_tag_name(self.request.data.get('tags'))
+        tags = get_tag_by_list_tag_name(json.loads(self.request.data.get('tags')))
         instance = serializer.save(tags=tags)
         info = elasticsearch.question_update(question_id=instance.id,
                                              title=instance.title,
@@ -300,6 +315,18 @@ class AnswerListInQuestionView(ListAPIView):
         return get_object_or_404(Question, pk=question_id)
 
 
+class AnswerContentView(RetrieveAPIView):
+    serializer_class = serializers.AnswerContentSerializer
+    # permission_classes = [permissions.IsAuthenticated, IsOwner]
+    queryset = Answer.objects.all()
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(instance, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class AnswerUpdateDestroyView(UpdateAPIView, DestroyAPIView):
     serializer_class = serializers.AnswerDetailSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]
@@ -334,6 +361,34 @@ class AnswerUpdateDestroyView(UpdateAPIView, DestroyAPIView):
         instance.delete()
 
 
+class AnswerAcceptedView(UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    queryset = Question.objects.all()
+    lookup_field = 'id'
+
+    def patch(self, request, *args, **kwargs):
+        require_fields = ['best_answer']
+
+        try:
+            check_require_fields(require_fields, request.data.keys())
+        except FieldErrorException as err:
+            return Response(
+                data={"error": err.__str__()},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        best_answer = request.data.get('best_answer')
+        try:
+            answer = Answer.objects.get(pk=best_answer)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        question = self.get_object()
+        if request.user == answer.owner:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        question.best_answer = best_answer
+        question.save()
+        return Response(status=status.HTTP_200_OK)
+
+
 class VoteView(GenericAPIView):
     lookup_field = 'id'
     obj_type_field = 'type'  # type of voted object, value {'answer', 'question'}
@@ -349,30 +404,41 @@ class VoteView(GenericAPIView):
 
         post = self.get_object()
         owner_of_post = post.owner
-        points = self._get_points()
+        points = self._get_points(self.vote_action)
         user = request.user
 
-        vote = user.votes.get(post=post)
+        vote = user.votes.filter(post=post)
         if not vote.exists():
             post.score += points['post_point']
-            owner_of_post.profile.reputation_score += points['user_points']
-            if owner_of_post.profile.reputation_score < 0:
-                owner_of_post.profile.reputation_score = 0
-
-            post.save()
-            owner_of_post.profile.save()
-            user.vote(post=post, vote_type=self.vote_action)
-
-        else:
-            # check if vote action is difference
-            # reset post's score and user's reputation_score
-            # update with new points
-            vote = vote[0]
-            if vote.type != self.vote_action:
-                post.score += 2 * points['post_point']
-                owner_of_post.profile.reputation_score += 2 * points['user_points']
+            new_vote = Vote.objects.create(
+                user=user,
+                type=self.vote_action,
+                post=post
+            )
+            if owner_of_post.id != user.id:
+                owner_of_post.profile.reputation_score += points['user_points']
                 if owner_of_post.profile.reputation_score < 0:
                     owner_of_post.profile.reputation_score = 0
+                owner_of_post.profile.save()
+                elasticsearch.reputation_index(points_received=points['user_points'],
+                                               date_received=new_vote.date_vote,
+                                               owner_id=owner_of_post.id,
+                                               username=owner_of_post.username,
+                                               type_received='vote',
+                                               vote_id=new_vote.id)
+            post.save()
+        else:
+            vote = vote[0]
+            if vote.type != self.vote_action:
+                old_points = self._get_points(vote.type)['user_points']
+                post.score += 2 * points['post_point']
+                if owner_of_post.id != user.id:
+                    owner_of_post.profile.reputation_score += points['user_points'] - old_points
+                    if owner_of_post.profile.reputation_score < 0:
+                        owner_of_post.profile.reputation_score = 0
+                    elasticsearch.reputation_vote_update(points=points['user_points'],
+                                                         vote_id=vote.id)
+
                 vote.type = self.vote_action
 
                 post.save()
@@ -395,15 +461,15 @@ class VoteView(GenericAPIView):
             queryset = Answer.objects.all()
         return queryset
 
-    def _get_points(self, ):
-        if self.vote_action == 'up':
+    def _get_points(self, vote_action):
+        if vote_action == 'up':
             return {
                 'user_points': 10,
                 'post_point': 1
             }
         else:
             return {
-                'user_points': -10,
+                'user_points': -5,
                 'post_point': -1
             }
 
