@@ -19,6 +19,7 @@ from collections import OrderedDict
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from rest_framework import (status, permissions)
 from rest_framework.generics import (
@@ -384,9 +385,40 @@ class AnswerAcceptedView(UpdateAPIView):
         question = self.get_object()
         if request.user == answer.owner:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        if question.best_answer == best_answer:
+            return Response(status=status.HTTP_200_OK)
+
+        # if question.best_answer have been set, we must delete points
+        # of owner of this answer receipted
+        if question.best_answer != 0:
+            self.__restore_reputation_score(question)
+
+        # set new best_answer
         question.best_answer = best_answer
+
+        # user who is owner of this answer will receipt 50 reputation points
+        owner = answer.owner
+        owner.profile.reputation_score += 50
+        elasticsearch.reputation_index(points_received=50,
+                                       date_received=timezone.now(),
+                                       owner_id=owner.id,
+                                       username=owner.username,
+                                       type_received='best-answer',
+                                       answer_id=answer.id)
+        owner.profile.save()
         question.save()
         return Response(status=status.HTTP_200_OK)
+
+    def __restore_reputation_score(self, question):
+        old_answer = Answer.objects.get(pk=question.best_answer)
+        old_owner = old_answer.owner
+        old_owner.profile.reputation_score -= 50
+        if old_owner.profile.reputation_score < 0:
+            old_owner.profile.reputation_score = 0
+        elasticsearch.reputation_delete(answer_id=old_answer.id,
+                                        owner_id=old_owner.id,
+                                        type_received='best-answer')
+        old_owner.profile.save()
 
 
 class CommentCreationView(CreateAPIView):
