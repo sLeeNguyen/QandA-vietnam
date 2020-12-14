@@ -41,6 +41,27 @@ class TagBasicInfoSerializer(serializers.ModelSerializer):
         fields = ['id', 'tag_name']
 
 
+class CommentDetailSerializer(serializers.ModelSerializer):
+    owner = UserBasicInfoSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        exclude = ['in_post']
+
+
+class CommentCreationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ['content']
+
+    def to_representation(self, instance):
+        return {
+            'post_id': instance.in_post.id,
+            'comment': CommentDetailSerializer(instance, context=self.context).data
+        }
+
+
 class AnswerCreationSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -56,16 +77,19 @@ class AnswerCreationSerializer(serializers.ModelSerializer):
 
 class AnswerDetailSerializer(serializers.ModelSerializer):
     owner = UserBasicInfoSerializer(read_only=True)
+    comments = CommentDetailSerializer(many=True, read_only=True)
 
     class Meta:
         model = Answer
         fields = [
-            'id', 'content', 'score', 'date_create', 'last_update', 'owner'
+            'id', 'content', 'score', 'date_create', 'last_update', 'owner', 'comments'
         ]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
         user = self.context['request'].user
+        data['num_of_comments'] = len(data['comments'])
+        data['comments'] = data['comments'][:5]
         if type(user) == AnonymousUser:
             data['voted'] = 0
             data['is_owner'] = 0
@@ -99,6 +123,7 @@ class QuestionCreationSerializer(serializers.ModelSerializer):
 class QuestionDetailSerializer(serializers.ModelSerializer):
     owner = UserBasicInfoSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
+    comments = CommentDetailSerializer(many=True, read_only=True)
 
     class Meta:
         model = Question
@@ -106,6 +131,8 @@ class QuestionDetailSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        data['num_of_comments'] = len(data['comments'])
+        data['comments'] = data['comments'][:5]
         user = self.context['request'].user
 
         if type(user) == AnonymousUser:
@@ -149,12 +176,3 @@ class AnswerContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = ['content']
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    owner = UserBasicInfoSerializer(read_only=True)
-
-    class Meta:
-        model = Comment
-        fields = '__all__'
-        exclude = ['in_post']

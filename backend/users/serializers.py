@@ -46,7 +46,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'token', 'display_name', 'avatar']
+        fields = ['id', 'email', 'username', 'password', 'token', 'display_name', 'avatar']
         extra_kwargs = {
             'email': {'validators': []},
             'username': {'read_only': True},
@@ -67,6 +67,7 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Tài khoản chưa được kích hoạt')
 
         return {
+            'id': user.id,
             'username': user.username,
             'email': user.email,
             'display_name': user.profile.display_name,
@@ -77,6 +78,7 @@ class LoginSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return {
             'user': {
+                'id': instance['id'],
                 'username': instance['username'],
                 'display_name': instance['display_name'],
                 'email': instance['email'],

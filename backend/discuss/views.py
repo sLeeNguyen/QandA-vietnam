@@ -30,7 +30,7 @@ from rest_framework.utils import json
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from . import serializers
-from .models import (Question, Answer, Vote)
+from .models import (Question, Answer, Vote, Post)
 from tags.models import Tag
 from .exceptions import FieldErrorException, ParamErrorException
 from .permissions import IsOwner
@@ -387,6 +387,41 @@ class AnswerAcceptedView(UpdateAPIView):
         question.best_answer = best_answer
         question.save()
         return Response(status=status.HTTP_200_OK)
+
+
+class CommentCreationView(CreateAPIView):
+    serializer_class = serializers.CommentCreationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Post.objects.all()
+    lookup_field = 'id'
+
+    def post(self, request, *args, **kwargs):
+        require_fields = ['content']
+        try:
+            check_require_fields(require_fields, request.data.keys())
+        except FieldErrorException as err:
+            return Response(
+                data={"error": err.__str__()},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return self.create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        post = self.get_object()
+        serializer.save(owner=self.request.user, in_post=post)
+
+
+class CommentListView(ListAPIView):
+    serializer_class = serializers.CommentDetailSerializer
+    queryset = Post.objects.all()
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        post = self.get_object()
+        res = []
+        for comment in post.comments.all()[5:]:
+            res.append(self.serializer_class(instance=comment).data)
+        return Response(data=res, status=status.HTTP_200_OK)
 
 
 class VoteView(GenericAPIView):

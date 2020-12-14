@@ -30,6 +30,8 @@ urlpatterns = [
     path('answers/create/', views.AnswerCreationView.as_view(), name='answer-creation'),
     path('answers/<int:id>/update-delete/', views.AnswerUpdateDestroyView.as_view(), name='answer-update'),
     path('answers/edit/<int:id>/', views.AnswerContentView.as_view(), name='edit-answer-content'),
+    path('post/<int:id>/comment/', views.CommentCreationView.as_view()),
+    path('post/<int:id>/comment/all/', views.CommentListView.as_view()),
     path('<str:type>/<int:id>/<str:action>/', views.VoteView.as_view(), name='vote'),
     path('search/', views.SearchView.as_view(), name='search-post')
 ]

@@ -58,7 +58,7 @@ class Answer(Post):
 class Comment(models.Model):
     content = models.TextField(blank=False, null=False)
     date_create = models.DateTimeField(default=timezone.now)
-    last_update = models.DateTimeField(blank=True, null=True)
+    last_update = models.DateTimeField(auto_now=True)
 
     owner = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
     in_post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
