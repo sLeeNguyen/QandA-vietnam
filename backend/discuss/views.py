@@ -15,10 +15,10 @@
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 import logging
+from collections import OrderedDict
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
-from django.contrib.contenttypes.models import ContentType
 
 from rest_framework import (status, permissions)
 from rest_framework.generics import (
@@ -27,14 +27,14 @@ from rest_framework.generics import (
 )
 from rest_framework.response import Response
 from rest_framework.utils import json
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from . import serializers
-from .models import (Question, Answer)
+from .models import (Question, Answer, Vote, Post)
 from tags.models import Tag
-from users.models import Vote
 from .exceptions import FieldErrorException, ParamErrorException
 from .permissions import IsOwner
-from .pagination import AnswerResultSetPagination
+from .pagination import ResultSetPagination
 from .utils import strip_tags
 from elasticsearch_client import elasticsearch
 
@@ -43,7 +43,7 @@ LOGGER = logging.getLogger(__name__)
 
 class QuestionListView(ListAPIView):
     queryset = Question.objects.all()
-    pagination_class = AnswerResultSetPagination
+    pagination_class = ResultSetPagination
 
     def get(self, request, *args, **kwargs):
         page = self.paginate_queryset(self.filter_queryset(self.queryset))
@@ -57,7 +57,7 @@ class QuestionListView(ListAPIView):
                     'date_create': question.date_create,
                     'score': question.score,
                     'best_answer': question.best_answer,
-                    'num_of_votes': question.num_votes,
+                    'num_of_votes': question.votes.all().count(),
                     'num_of_answers': question.answers.count(),
                     'owner': serializers.UserBasicInfoSerializer(
                         question.owner, context={'request': request}).data,
@@ -85,7 +85,80 @@ class QuestionListView(ListAPIView):
 
 
 class SearchView(ListAPIView):
-    pass
+    queryset = Question.objects.all()
+    pagination_class = ResultSetPagination
+
+    def get(self, request, *args, **kwargs):
+        # print(request.META.get('HTTP_AUTHORIZATION', ''))
+        data = self.get_data()
+        self.count = data['hits']['total']['value']
+        self.total_pages = self.count // self.paginator.page_size + 1
+
+        if self.page_number > self.total_pages:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        res = []
+        for element in data['hits']['hits']:
+            if element['_index'] == "question":
+                question = Question.objects.get(pk=element['_id'])
+                content = element['highlight']['content'][0] if 'highlight' in element else question.short_content
+                obj_dict = {
+                    'id': question.id,
+                    'title': question.title,
+                    'content': content,
+                    'date_create': question.date_create,
+                    'score': question.score,
+                    'best_answer': question.best_answer,
+                    'num_of_votes': question.votes.all().count(),
+                    'num_of_answers': question.answers.count(),
+                    'owner': serializers.UserBasicInfoSerializer(
+                        question.owner, context={'request': request}).data,
+                    'tags': serializers.TagBasicInfoSerializer(
+                        question.tags.all(), many=True).data
+                }
+            else:
+                answer = Answer.objects.get(pk=element['_id'])
+                content = element['highlight']['content'][0] if 'highlight' in element else answer.short_content
+                obj_dict = {
+                    'id': answer.id,
+                    'content': content,
+                    'date_create': answer.date_create,
+                    'score': answer.score,
+                    'num_of_votes': answer.votes.all().count(),
+                    'owner': serializers.UserBasicInfoSerializer(
+                        answer.owner, context={'request': request}).data,
+                }
+            res.append(obj_dict)
+
+        return self.build_response(res)
+
+    def get_data(self):
+        search_query = self.request.query_params.get("q", "")
+        self.sort = self.request.query_params.get("sort", "")
+        tags = self.request.query_params.get("tags", "")
+        if tags:
+            tags = tags.split(",")
+        else:
+            tags = None
+
+        return elasticsearch.discuss_search(query=search_query,
+                                            start=self.get_start(),
+                                            size=self.paginator.get_page_size(self.request),
+                                            sort=self.sort,
+                                            tags=tags)
+
+    def get_start(self):
+        paginator = self.paginator
+        self.page_number = paginator.get_page_number(self.request)
+        return (self.page_number - 1)*paginator.get_page_size(self.request)
+
+    def build_response(self, data):
+        return Response(OrderedDict([
+            ('count', self.count),
+            ('total_pages', self.total_pages),
+            ('current_page', self.page_number),
+            ('results', data)
+        ]))
 
 
 class QuestionCreationView(CreateAPIView):
@@ -93,7 +166,6 @@ class QuestionCreationView(CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        import pdb; pdb.set_trace()
         require_fields = ['title', 'content', 'tags']
         try:
             check_require_fields(require_fields, request.data.keys())
@@ -128,6 +200,9 @@ class QuestionDetailView(RetrieveAPIView):
     lookup_field = 'id'
 
     def get(self, request, *args, **kwargs):
+        if request.auth:
+            user, token = JWTAuthentication().authenticate(request)
+            request.user = user
         instance = self.get_object()
         serializer = self.serializer_class(instance, context={'request': request})
         res = serializer.data
@@ -142,9 +217,21 @@ class QuestionDetailView(RetrieveAPIView):
         return Response(res, status=status.HTTP_200_OK)
 
 
+class QuestionContentView(RetrieveAPIView):
+    serializer_class = serializers.QuestionContentSerializer
+    # permission_classes = [permissions.IsAuthenticated, IsOwner]
+    queryset = Question.objects.all()
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(instance, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class QuestionUpdateDestroyView(UpdateAPIView, DestroyAPIView):
     serializer_class = serializers.QuestionDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
     queryset = Question.objects.all()
     lookup_field = 'id'
 
@@ -163,7 +250,7 @@ class QuestionUpdateDestroyView(UpdateAPIView, DestroyAPIView):
         """
         Update both instance in database and document in elasticsearch
         """
-        tags = get_tag_by_list_tag_name(self.request.data.get('tags'))
+        tags = get_tag_by_list_tag_name(json.loads(self.request.data.get('tags')))
         instance = serializer.save(tags=tags)
         info = elasticsearch.question_update(question_id=instance.id,
                                              title=instance.title,
@@ -206,7 +293,7 @@ class AnswerCreationView(CreateAPIView):
 
 class AnswerListInQuestionView(ListAPIView):
     serializer_class = serializers.AnswerDetailSerializer
-    pagination_class = AnswerResultSetPagination
+    pagination_class = ResultSetPagination
     queryset = Answer.objects.all()
     lookup_field = 'id'  # this is question_id that answers belong to
 
@@ -226,6 +313,18 @@ class AnswerListInQuestionView(ListAPIView):
         """
         question_id = self.kwargs[self.lookup_field]
         return get_object_or_404(Question, pk=question_id)
+
+
+class AnswerContentView(RetrieveAPIView):
+    serializer_class = serializers.AnswerContentSerializer
+    # permission_classes = [permissions.IsAuthenticated, IsOwner]
+    queryset = Answer.objects.all()
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(instance, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AnswerUpdateDestroyView(UpdateAPIView, DestroyAPIView):
@@ -262,6 +361,69 @@ class AnswerUpdateDestroyView(UpdateAPIView, DestroyAPIView):
         instance.delete()
 
 
+class AnswerAcceptedView(UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+    queryset = Question.objects.all()
+    lookup_field = 'id'
+
+    def patch(self, request, *args, **kwargs):
+        require_fields = ['best_answer']
+
+        try:
+            check_require_fields(require_fields, request.data.keys())
+        except FieldErrorException as err:
+            return Response(
+                data={"error": err.__str__()},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        best_answer = request.data.get('best_answer')
+        try:
+            answer = Answer.objects.get(pk=best_answer)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        question = self.get_object()
+        if request.user == answer.owner:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        question.best_answer = best_answer
+        question.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+class CommentCreationView(CreateAPIView):
+    serializer_class = serializers.CommentCreationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Post.objects.all()
+    lookup_field = 'id'
+
+    def post(self, request, *args, **kwargs):
+        require_fields = ['content']
+        try:
+            check_require_fields(require_fields, request.data.keys())
+        except FieldErrorException as err:
+            return Response(
+                data={"error": err.__str__()},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return self.create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        post = self.get_object()
+        serializer.save(owner=self.request.user, in_post=post)
+
+
+class CommentListView(ListAPIView):
+    serializer_class = serializers.CommentDetailSerializer
+    queryset = Post.objects.all()
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        post = self.get_object()
+        res = []
+        for comment in post.comments.all()[5:]:
+            res.append(self.serializer_class(instance=comment).data)
+        return Response(data=res, status=status.HTTP_200_OK)
+
+
 class VoteView(GenericAPIView):
     lookup_field = 'id'
     obj_type_field = 'type'  # type of voted object, value {'answer', 'question'}
@@ -277,32 +439,41 @@ class VoteView(GenericAPIView):
 
         post = self.get_object()
         owner_of_post = post.owner
-        points = self._get_points()
+        points = self._get_points(self.vote_action)
         user = request.user
 
-        vote = Vote.objects.filter(user=user,
-                                   object_id=post.id,
-                                   content_type=ContentType.objects.get_for_model(post))
+        vote = user.votes.filter(post=post)
         if not vote.exists():
             post.score += points['post_point']
-            owner_of_post.profile.reputation_score += points['user_points']
-            if owner_of_post.profile.reputation_score < 0:
-                owner_of_post.profile.reputation_score = 0
-
-            post.save()
-            owner_of_post.profile.save()
-            user.vote(post=post, vote_type=self.vote_action)
-
-        else:
-            # check if vote action is difference
-            # reset post's score and user's reputation_score
-            # update with new points
-            vote = vote[0]
-            if vote.type != self.vote_action:
-                post.score += 2*points['post_point']
-                owner_of_post.profile.reputation_score += 2*points['user_points']
+            new_vote = Vote.objects.create(
+                user=user,
+                type=self.vote_action,
+                post=post
+            )
+            if owner_of_post.id != user.id:
+                owner_of_post.profile.reputation_score += points['user_points']
                 if owner_of_post.profile.reputation_score < 0:
                     owner_of_post.profile.reputation_score = 0
+                owner_of_post.profile.save()
+                elasticsearch.reputation_index(points_received=points['user_points'],
+                                               date_received=new_vote.date_vote,
+                                               owner_id=owner_of_post.id,
+                                               username=owner_of_post.username,
+                                               type_received='vote',
+                                               vote_id=new_vote.id)
+            post.save()
+        else:
+            vote = vote[0]
+            if vote.type != self.vote_action:
+                old_points = self._get_points(vote.type)['user_points']
+                post.score += 2 * points['post_point']
+                if owner_of_post.id != user.id:
+                    owner_of_post.profile.reputation_score += points['user_points'] - old_points
+                    if owner_of_post.profile.reputation_score < 0:
+                        owner_of_post.profile.reputation_score = 0
+                    elasticsearch.reputation_vote_update(points=points['user_points'],
+                                                         vote_id=vote.id)
+
                 vote.type = self.vote_action
 
                 post.save()
@@ -325,15 +496,15 @@ class VoteView(GenericAPIView):
             queryset = Answer.objects.all()
         return queryset
 
-    def _get_points(self,):
-        if self.vote_action == 'up':
+    def _get_points(self, vote_action):
+        if vote_action == 'up':
             return {
                 'user_points': 10,
                 'post_point': 1
             }
         else:
             return {
-                'user_points': -10,
+                'user_points': -5,
                 'post_point': -1
             }
 

@@ -19,7 +19,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 
-class AnswerResultSetPagination(PageNumberPagination):
+class ResultSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 100
@@ -31,3 +31,7 @@ class AnswerResultSetPagination(PageNumberPagination):
             ('current_page', self.page.number),
             ('results', data)
         ]))
+
+    def get_page_number(self, request):
+        page_number = request.query_params.get(self.page_query_param, 1)
+        return page_number

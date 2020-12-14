@@ -18,6 +18,8 @@ from django.contrib import admin
 from discuss import models
 
 
+admin.site.register(models.Post)
 admin.site.register(models.Question)
 admin.site.register(models.Answer)
 admin.site.register(models.Comment)
+admin.site.register(models.Vote)
