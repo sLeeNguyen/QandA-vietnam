@@ -120,8 +120,11 @@ class SearchView(ListAPIView):
             else:
                 answer = Answer.objects.get(pk=element['_id'])
                 content = element['highlight']['content'][0] if 'highlight' in element else answer.short_content
+                in_question = answer.in_question
                 obj_dict = {
                     'id': answer.id,
+                    'in_question_id': in_question.id,
+                    'in_question_title': in_question.title,
                     'content': content,
                     'date_create': answer.date_create,
                     'score': answer.score,
@@ -253,9 +256,12 @@ class QuestionUpdateDestroyView(UpdateAPIView, DestroyAPIView):
         """
         tags = get_tag_by_list_tag_name(json.loads(self.request.data.get('tags')))
         instance = serializer.save(tags=tags)
+        content_strip_tags = strip_tags(instance.content)
+        instance.short_content = content_strip_tags[:300]
+        instance.save()
         info = elasticsearch.question_update(question_id=instance.id,
                                              title=instance.title,
-                                             content=instance.content,
+                                             content=content_strip_tags,
                                              tags=instance.get_list_tag_names())
         LOGGER.info(info)
 
@@ -285,8 +291,11 @@ class AnswerCreationView(CreateAPIView):
     def perform_create(self, serializer):
         question = get_object_or_404(Question, pk=self.request.data.get('question_id'))
         instance = serializer.save(owner=self.request.user, in_question=question)
+        content_strip_tags = strip_tags(instance.content)
+        instance.short_content = content_strip_tags[:300]
+        instance.save()
         info = elasticsearch.answer_index(answer_id=instance.id,
-                                          content=strip_tags(instance.content),
+                                          content=content_strip_tags,
                                           date_create=instance.date_create,
                                           owner_id=instance.owner.id)
         LOGGER.info(msg=info)
@@ -350,8 +359,11 @@ class AnswerUpdateDestroyView(UpdateAPIView, DestroyAPIView):
         Update both instance in database and document in elasticsearch
         """
         instance = serializer.save()
+        content_strip_tags = strip_tags(instance.content)
+        instance.short_content = content_strip_tags[:300]
+        instance.save()
         info = elasticsearch.answer_update(answer_id=instance.id,
-                                           content=instance.content)
+                                           content=content_strip_tags)
         LOGGER.info(msg=info)
 
     def perform_destroy(self, instance):

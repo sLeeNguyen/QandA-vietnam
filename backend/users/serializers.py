@@ -123,9 +123,5 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ['password', 'groups', 'user_permissions', 'last_login']
-
-    def to_representation(self, instance):
-        pass
-
-
+        exclude = ['password', 'groups', 'user_permissions', 'last_login', 'is_verified', 'is_active', 'is_staff',
+                   'is_superuser']
