@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 
 # other
-/tags/migrations
-/users/migrations
-/discuss/migrations
+/tags/migrations/0*
+/users/migrations/0*
+/discuss/migrations/0*

@@ -19,6 +19,7 @@ from collections import OrderedDict
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from rest_framework import (status, permissions)
 from rest_framework.generics import (
@@ -119,8 +120,11 @@ class SearchView(ListAPIView):
             else:
                 answer = Answer.objects.get(pk=element['_id'])
                 content = element['highlight']['content'][0] if 'highlight' in element else answer.short_content
+                in_question = answer.in_question
                 obj_dict = {
                     'id': answer.id,
+                    'in_question_id': in_question.id,
+                    'in_question_title': in_question.title,
                     'content': content,
                     'date_create': answer.date_create,
                     'score': answer.score,
@@ -252,9 +256,12 @@ class QuestionUpdateDestroyView(UpdateAPIView, DestroyAPIView):
         """
         tags = get_tag_by_list_tag_name(json.loads(self.request.data.get('tags')))
         instance = serializer.save(tags=tags)
+        content_strip_tags = strip_tags(instance.content)
+        instance.short_content = content_strip_tags[:300]
+        instance.save()
         info = elasticsearch.question_update(question_id=instance.id,
                                              title=instance.title,
-                                             content=instance.content,
+                                             content=content_strip_tags,
                                              tags=instance.get_list_tag_names())
         LOGGER.info(info)
 
@@ -284,8 +291,11 @@ class AnswerCreationView(CreateAPIView):
     def perform_create(self, serializer):
         question = get_object_or_404(Question, pk=self.request.data.get('question_id'))
         instance = serializer.save(owner=self.request.user, in_question=question)
+        content_strip_tags = strip_tags(instance.content)
+        instance.short_content = content_strip_tags[:300]
+        instance.save()
         info = elasticsearch.answer_index(answer_id=instance.id,
-                                          content=strip_tags(instance.content),
+                                          content=content_strip_tags,
                                           date_create=instance.date_create,
                                           owner_id=instance.owner.id)
         LOGGER.info(msg=info)
@@ -349,8 +359,11 @@ class AnswerUpdateDestroyView(UpdateAPIView, DestroyAPIView):
         Update both instance in database and document in elasticsearch
         """
         instance = serializer.save()
+        content_strip_tags = strip_tags(instance.content)
+        instance.short_content = content_strip_tags[:300]
+        instance.save()
         info = elasticsearch.answer_update(answer_id=instance.id,
-                                           content=instance.content)
+                                           content=content_strip_tags)
         LOGGER.info(msg=info)
 
     def perform_destroy(self, instance):
@@ -384,9 +397,40 @@ class AnswerAcceptedView(UpdateAPIView):
         question = self.get_object()
         if request.user == answer.owner:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        if question.best_answer == best_answer:
+            return Response(status=status.HTTP_200_OK)
+
+        # if question.best_answer have been set, we must delete points
+        # of owner of this answer receipted
+        if question.best_answer != 0:
+            self.__restore_reputation_score(question)
+
+        # set new best_answer
         question.best_answer = best_answer
+
+        # user who is owner of this answer will receipt 50 reputation points
+        owner = answer.owner
+        owner.profile.reputation_score += 50
+        elasticsearch.reputation_index(points_received=50,
+                                       date_received=timezone.now(),
+                                       owner_id=owner.id,
+                                       username=owner.username,
+                                       type_received='best-answer',
+                                       answer_id=answer.id)
+        owner.profile.save()
         question.save()
         return Response(status=status.HTTP_200_OK)
+
+    def __restore_reputation_score(self, question):
+        old_answer = Answer.objects.get(pk=question.best_answer)
+        old_owner = old_answer.owner
+        old_owner.profile.reputation_score -= 50
+        if old_owner.profile.reputation_score < 0:
+            old_owner.profile.reputation_score = 0
+        elasticsearch.reputation_delete(answer_id=old_answer.id,
+                                        owner_id=old_owner.id,
+                                        type_received='best-answer')
+        old_owner.profile.save()
 
 
 class CommentCreationView(CreateAPIView):

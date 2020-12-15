@@ -256,3 +256,19 @@ def answer_delete(answer_id):
     Delete document with id is 'answer_id'
     """
     es.delete(index='answer', id=answer_id)
+
+
+def reputation_delete(**kwargs):
+    """
+    Delete by query
+    """
+    query = {
+        "query": {
+            "bool": {
+                "must": {}
+            }
+        }
+    }
+    for key in kwargs:
+        query["query"]["bool"]["must"].update({"term": {key: kwargs[key]}})
+    es.delete_by_query(index="reputation", body=query)

@@ -20,7 +20,7 @@ from jwt.exceptions import DecodeError
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework import (status, permissions)
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
@@ -124,3 +124,9 @@ class LogoutView(GenericAPIView):
         serializer.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserProfileView(RetrieveAPIView):
+    serializer_class = serializers.UserDetailSerializer
+    queryset = User.objects.all()
+    lookup_field = 'id'
